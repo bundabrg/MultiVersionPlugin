@@ -14,9 +14,6 @@ public abstract class MultiVersionPlugin extends JavaPlugin {
     // Base package to version
     private String base;
 
-    // List of versions available, in ascending order
-    private String[] versions;
-
     // Name of plugin to load
     private String pluginName;
 
@@ -36,26 +33,18 @@ public abstract class MultiVersionPlugin extends JavaPlugin {
     /**
      * Constructor
      */
-    public MultiVersionPlugin(String base, String pluginName, String[] versions) {
+    public MultiVersionPlugin(String base, String pluginName) {
         super();
 
         instance = this;
         this.base = base;
         this.pluginName = pluginName;
-        this.versions = versions;
 
         // Configure ClassLoader
-        loader = this.getClass().getClassLoader();
-        for (int i=0; i<versions.length; i++) {
-            if (serverVersion.equals(versions[i])) {
-                loader = new MultiVersionLoader(
-                        loader,
-                        base,
-                        Arrays.copyOfRange(versions, i, versions.length)
-                );
-                break;
-            }
-        }
+        loader = new MultiVersionLoader(
+                    getClassLoader(),
+                    base,
+                    serverVersion);
 
         // Load Plugin
         try {
