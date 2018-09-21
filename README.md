@@ -94,8 +94,24 @@ This provides a special classloader. When you attempt to load class it will chec
 
 This allows patching in classes based upon the loaded server. 
 
+If your plugin jar has the following structure:
+```
+org/my/project/Class1.class
+org/my/project/Class2.class
+org/my/project/Class3.class
+MVP/1_8_R3/org/my/project/Class2.class
+MVP/1_10_R1/org/my/project/Class1.class
+```
 
+When run on a 1.8-r3 server, a lookup of:
+  * Class1 will come from MVP/1_10_R1/org/my/project/Class1.class. 
+  * Class2 will come from MVP/1_8_R3/org/my/project/Class1.class. 
+  * Class3 will come from /org/my/project/Class3.class
 
+When run on a 1.9-R2 server, a lookup of:
+  * Class1 will come from MVP/1_10_R1/org/my/project/Class1.class. 
+  * Class2 will come from /org/my/project/Class1.class.
+  * Class3 will come from /org/my/project/Class3.class
 
 
 
