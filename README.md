@@ -42,7 +42,7 @@ public class MyPlugin extends VersionPlugin {
 ## 3. Configure your build to shade them together
 You will have your existing project but it will have the BootstrapPlugin as its entrypoint. 
 
-If your own plugin needs to access a JavaPlugin instance (for example when accessing Bukkit events etc) you can use getPlugin() instead of this.
+If your own plugin needs to access a JavaPlugin instance (for example when accessing Bukkit events etc) you can use getPlugin().
 
 ie:
 ```
