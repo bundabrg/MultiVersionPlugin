@@ -4,24 +4,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.util.Arrays;
 
 public abstract class MultiVersionPlugin extends JavaPlugin {
+    // Static Variables
     private static MultiVersionPlugin instance;
-
+    private static MultiVersionLoader loader;
+    private static String localBase;
+    private static String localPluginName;
     private final static String serverVersion = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].substring(1);
 
-    // Base package to version
-    private String base;
-
-    // Name of plugin to load
-    private String pluginName;
-
-    // Plugin Instance
-    private VersionPlugin plugin;
-
-    // Classloader
-    private ClassLoader loader;
+    // Local Variables
+    private VersionPlugin versionPlugin;
 
     /**
      * Return Current Plugin instance
@@ -31,44 +24,49 @@ public abstract class MultiVersionPlugin extends JavaPlugin {
     }
 
     /**
-     * Constructor
+     * Initialize and load the appropriate Version
      */
-    public MultiVersionPlugin(String base, String pluginName) {
-        super();
+    protected static void initPlugin(String base, String pluginName) {
+        localBase = base;
+        localPluginName = pluginName;
 
-        instance = this;
-        this.base = base;
-        this.pluginName = pluginName;
-
-        // Configure ClassLoader
         loader = new MultiVersionLoader(
-                    getClassLoader(),
-                    base,
-                    serverVersion);
+                MultiVersionPlugin.class.getClassLoader(),
+                base,
+                serverVersion);
+    }
+
+    /**
+     * Constructor
+     * @return
+     */
+    public MultiVersionPlugin() {
+        super();
+        instance = this;
 
         // Load Plugin
         try {
-            plugin = (VersionPlugin) loader.loadClass(String.join(".", base, pluginName)).newInstance();
+            versionPlugin = (VersionPlugin) loader.loadClass(String.join(".", localBase, localPluginName)).newInstance();
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public VersionPlugin getPlugin() {
-        return plugin;
+    public VersionPlugin getVersionPlugin() {
+        return versionPlugin;
     }
-
 
     @Override
     public void onEnable() {
-        getPlugin().onEnable();
+        getVersionPlugin().onEnable();
     }
 
     @Override
     public void onDisable() {
-        getPlugin().onDisable();
+        getVersionPlugin().onDisable();
     }
 
+    // Make some methods public
     @Override
     public File getFile() {
         return super.getFile();
