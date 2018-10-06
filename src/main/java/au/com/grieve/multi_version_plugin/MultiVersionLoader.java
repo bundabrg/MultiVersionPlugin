@@ -147,6 +147,16 @@ public class MultiVersionLoader extends ClassLoader {
         }
     }
 
+    private void removeCachedClass(String name) {
+        try {
+            Method setClassMethod = javaPluginLoader.getClass().getDeclaredMethod("removeClass", String.class);
+            setClassMethod.setAccessible(true);
+            setClassMethod.invoke(javaPluginLoader, name);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private Class <?> loadClassFromStream(String name, InputStream stream) throws IOException {
         // Define package if needed
         String packageName = getPackageName(name);
@@ -180,13 +190,18 @@ public class MultiVersionLoader extends ClassLoader {
             return super.loadClass(name, resolve);
         }
 
-
         try {
             // Try load from Cache first
             c = getCachedClass(name);
 
             if (c != null) {
-                return c;
+                if (!(c.getClassLoader() instanceof MultiVersionLoader)) {
+                    // Kind of a hack. Cached is not through us so we replace it
+                    removeCachedClass(name);
+                    c = null;
+                } else{
+                    return c;
+                }
             }
 
             // Try load versioned
