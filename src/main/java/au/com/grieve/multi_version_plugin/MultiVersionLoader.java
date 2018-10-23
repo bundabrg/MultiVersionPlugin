@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -64,7 +65,7 @@ public class MultiVersionLoader extends ClassLoader {
         Map<String, List<String>> versionClassFilenames = new HashMap<>();
         Comparator<String> naturalComparator = new NaturalOrderComparator<>(true);
 
-        try (JarFile jar = new JarFile(getClass().getProtectionDomain().getCodeSource().getLocation().getPath())) {
+        try (JarFile jar = new JarFile(getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath())) {
             Enumeration<JarEntry> entries = jar.entries();
             while(entries.hasMoreElements()) {
                 JarEntry entry = entries.nextElement();
@@ -90,7 +91,7 @@ public class MultiVersionLoader extends ClassLoader {
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
 
