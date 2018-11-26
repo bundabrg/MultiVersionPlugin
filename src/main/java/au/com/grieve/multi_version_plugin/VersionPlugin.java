@@ -17,8 +17,14 @@ import java.util.logging.Logger;
  * would normally extend JavaPlugin
  */
 public abstract class VersionPlugin {
-    static public MultiVersionPlugin getPlugin() {
-        return MultiVersionPlugin.getInstance();
+    private final MultiVersionPlugin javaPlugin;
+
+    public VersionPlugin(MultiVersionPlugin plugin) {
+        javaPlugin = plugin;
+    }
+
+    public JavaPlugin getJavaPlugin() {
+        return javaPlugin;
     }
 
     // Proxy Methods
@@ -30,7 +36,7 @@ public abstract class VersionPlugin {
      * @return The folder.
      */
     public final File getDataFolder() {
-        return getPlugin().getDataFolder();
+        return javaPlugin.getDataFolder();
     }
 
     /**
@@ -39,7 +45,7 @@ public abstract class VersionPlugin {
      * @return PluginLoader that controls this plugin
      */
     public final PluginLoader getPluginLoader() {
-        return getPlugin().getPluginLoader();
+        return javaPlugin.getPluginLoader();
     }
 
     /**
@@ -48,7 +54,7 @@ public abstract class VersionPlugin {
      * @return Server running this plugin
      */
     public final Server getServer() {
-        return getPlugin().getServer();
+        return javaPlugin.getServer();
     }
 
     /**
@@ -58,7 +64,7 @@ public abstract class VersionPlugin {
      * @return true if this plugin is enabled, otherwise false
      */
     public final boolean isEnabled() {
-        return getPlugin().isEnabled();
+        return javaPlugin.isEnabled();
     }
 
     /**
@@ -67,7 +73,7 @@ public abstract class VersionPlugin {
      * @return File containing this plugin
      */
     protected File getFile() {
-        return getPlugin().getFile();
+        return javaPlugin.getFile();
     }
 
     /**
@@ -76,31 +82,31 @@ public abstract class VersionPlugin {
      * @return Contents of the plugin.yaml file
      */
     public final PluginDescriptionFile getDescription() {
-        return getPlugin().getDescription();
+        return javaPlugin.getDescription();
     }
 
     public FileConfiguration getConfig() {
-        return getPlugin().getConfig();
+        return javaPlugin.getConfig();
     }
 
     public void reloadConfig() {
-        getPlugin().reloadConfig();
+        javaPlugin.reloadConfig();
     }
 
     public void saveConfig() {
-        getPlugin().saveConfig();
+        javaPlugin.saveConfig();
     }
 
     public void saveDefaultConfig() {
-        getPlugin().saveDefaultConfig();
+        javaPlugin.saveDefaultConfig();
     }
 
     public void saveResource(String resourcePath, boolean replace) {
-        getPlugin().saveResource(resourcePath, replace);
+        javaPlugin.saveResource(resourcePath, replace);
     }
 
     public InputStream getResource(String filename) {
-        return getPlugin().getResource(filename);
+        return javaPlugin.getResource(filename);
     }
 
     /**
@@ -112,7 +118,7 @@ public abstract class VersionPlugin {
      * @return the plugin command if found, otherwise null
      */
     public PluginCommand getCommand(String name) {
-        return getPlugin().getCommand(name);
+        return javaPlugin.getCommand(name);
     }
 
     public void onLoad() {}
@@ -122,19 +128,19 @@ public abstract class VersionPlugin {
     public void onEnable() {}
 
     public final boolean isNaggable() {
-        return getPlugin().isNaggable();
+        return javaPlugin.isNaggable();
     }
 
     public final void setNaggable(boolean canNag) {
-        getPlugin().setNaggable(canNag);
+        javaPlugin.setNaggable(canNag);
     }
 
     public Logger getLogger() {
-        return getPlugin().getLogger();
+        return javaPlugin.getLogger();
     }
 
     public String toString() {
-        return getPlugin().toString();
+        return javaPlugin.toString();
     }
 
     /**

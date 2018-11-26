@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 
 public abstract class MultiVersionPlugin extends JavaPlugin {
     // Static Variables
@@ -15,13 +16,14 @@ public abstract class MultiVersionPlugin extends JavaPlugin {
 
     // Local Variables
     private VersionPlugin versionPlugin;
-
-    /**
-     * Return Current Plugin instance
-     */
-    public static MultiVersionPlugin getInstance() {
-        return instance;
-    }
+//
+//    /**
+//     * Return Current Plugin instance
+//     */
+//    public static MultiVersionPlugin getInstance() {
+//        System.err.println("Test: " + instance);
+//        return instance;
+//    }
 
     /**
      * Initialize and load the appropriate Version
@@ -46,8 +48,10 @@ public abstract class MultiVersionPlugin extends JavaPlugin {
 
         // Load Plugin
         try {
-            versionPlugin = (VersionPlugin) loader.loadClass(String.join(".", localBase, localPluginName)).newInstance();
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            versionPlugin = (VersionPlugin) loader.loadClass(String.join(".", localBase, localPluginName))
+                    .getConstructor(MultiVersionPlugin.class)
+                    .newInstance(this);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }

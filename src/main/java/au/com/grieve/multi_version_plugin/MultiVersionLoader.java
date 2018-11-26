@@ -187,7 +187,7 @@ public class MultiVersionLoader extends ClassLoader {
         }
 
         // Only interested if its base package name matches us
-        if (!name.startsWith(base)) {
+        if (!name.startsWith(base) || name.contains("multi_version_plugin")) {
             return super.loadClass(name, resolve);
         }
 
