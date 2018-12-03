@@ -1,10 +1,10 @@
 package au.com.grieve.multi_version_plugin;
 
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 public abstract class MultiVersionPlugin extends JavaPlugin {
     // Static Variables
@@ -12,30 +12,36 @@ public abstract class MultiVersionPlugin extends JavaPlugin {
     private static MultiVersionLoader loader;
     private static String localBase;
     private static String localPluginName;
-    private final static String serverVersion = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].substring(1);
 
     // Local Variables
     private VersionPlugin versionPlugin;
-//
-//    /**
-//     * Return Current Plugin instance
-//     */
-//    public static MultiVersionPlugin getInstance() {
-//        System.err.println("Test: " + instance);
-//        return instance;
-//    }
 
     /**
      * Initialize and load the appropriate Version
      */
-    protected static void initPlugin(String base, String pluginName) {
+    protected static void initPlugin(String base, String pluginName, List<String> versions) {
         localBase = base;
         localPluginName = pluginName;
 
         loader = new MultiVersionLoader(
                 MultiVersionPlugin.class.getClassLoader(),
                 base,
-                serverVersion);
+                versions);
+    }
+
+    /**
+     * Return true if class exists otherwise false
+     *
+     * @param name Class Name
+     * @return true if class exists
+     */
+    protected static boolean isClass(String name) {
+        try {
+            Class.forName(name);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
     }
 
     /**

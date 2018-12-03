@@ -2,7 +2,6 @@ package au.com.grieve.multi_version_plugin;
 
 import org.apache.commons.io.IOUtils;
 import org.bukkit.plugin.java.JavaPluginLoader;
-import org.cougaar.util.NaturalOrderComparator;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,13 +10,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 
 /**
  * This ClassLoader allows a plugin to load their classes in a versioning method. It will scan through the
@@ -37,9 +36,11 @@ public class MultiVersionLoader extends ClassLoader {
     private final String base;
     private final JavaPluginLoader javaPluginLoader;
     private Map<String, String> versionedClasses;
+    private List<String> versions;
 
-    public MultiVersionLoader(ClassLoader parent, String base, String serverVersion) {
+    public MultiVersionLoader(ClassLoader parent, String base, List<String> versions) {
         super(parent);
+        this.versions = versions;
 
         Class<?> pluginClassLoader;
 
@@ -61,9 +62,9 @@ public class MultiVersionLoader extends ClassLoader {
         this.base = base;
 
         // Build list of versions
-        List<String> versions = new ArrayList<>();
-        Map<String, List<String>> versionClassFilenames = new HashMap<>();
-        Comparator<String> naturalComparator = new NaturalOrderComparator<>(true);
+        Map<String, List<String>> versionClassFilenames = versions.stream()
+                .collect(Collectors.toMap(v -> v, v -> new ArrayList<>()));
+
 
         try (JarFile jar = new JarFile(getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath())) {
             Enumeration<JarEntry> entries = jar.entries();
@@ -75,14 +76,8 @@ public class MultiVersionLoader extends ClassLoader {
                     // Grab the version
                     String version = name.substring(4,name.indexOf("/", 4));
 
-                    // Only interested if version is equal or greater than current serverVersion
-                    if (naturalComparator.compare(serverVersion, version) <= 0) {
-
-                        // Add to Version list
-                        if (!versions.contains(version)) {
-                            versions.add(version);
-                            versionClassFilenames.put(version, new ArrayList<>());
-                        }
+                    // Only interested if version is in our list
+                    if (versions.contains(version)) {
 
                         // If its a class, store a reference to it
                         if (name.endsWith(".class")) {
@@ -94,9 +89,6 @@ public class MultiVersionLoader extends ClassLoader {
         } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
-
-        // Sort it naturally
-        versions.sort(naturalComparator);
 
         // Store unique list of versioned classes
         versionedClasses = new HashMap<>();

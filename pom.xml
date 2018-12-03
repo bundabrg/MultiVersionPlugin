@@ -6,7 +6,7 @@
 
     <groupId>au.com.grieve.multi_version_plugin</groupId>
     <artifactId>MultiVersionPlugin</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2</version>
 
     <repositories>
         <repository>
@@ -62,9 +62,15 @@
     </build>
     <distributionManagement>
         <repository>
-            <id>internal</id>
-            <url>file://${project.build.directory}/mvn-repo</url>
+            <id>releases</id>
+            <name>Releases</name>
+            <url>https://repo.worldguard.com.au/repository/maven-releases/</url>
         </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>Snapshot</name>
+            <url>https://repo.worldguard.com.au/repository/maven-snapshots/</url>
+        </snapshotRepository>
     </distributionManagement>
 
 </project>
